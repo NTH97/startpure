@@ -18,7 +18,7 @@ subprojects {
     }
 
     dependencies {
-        compileOnly(files("C:/Users/Admin/DreamBot/BotData/repository2/dreambot-client.jar"))
+        compileOnly(files("C:/Users/nthju/DreamBot/BotData/repository2/dreambot-client.jar"))
 
         compileOnly(rootProject.libs.lombok)
         annotationProcessor(rootProject.libs.lombok)

@@ -1,7 +1,8 @@
 rootProject.name = "DreamBot"
 
 include(
-    "dreambot-script"
+    "dreambot-script",
+    "startpure"
 )
 
 for (project in rootProject.children) {
