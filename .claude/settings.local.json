@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:dreambot.org)",
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(findstr:*)",
+      "Bash(copy:*)",
+      "Bash(./gradlew.bat:*)",
+      "Bash(gradlew.bat compileJava:*)",
+      "Bash(cmd /c \"gradlew.bat compileJava\")",
+      "Bash(cmd.exe /c:*)",
+      "Bash(C:/Users/Admin/IdeaProjects/DreamBot/gradlew.bat compileJava)",
+      "Bash(C:/Users/Admin/IdeaProjects/DreamBot/gradlew.bat build)",
+      "Bash(jar tf:*)",
+      "Bash(curl:*)",
+      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''https://dreambot.org/guides/scripter-guide/how-to/images/woodcutting_guide_clean_script.png'' -OutFile ''C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Admin-IdeaProjects-DreamBot\\\\da0b0d38-6304-4006-a796-960db7f97e77\\\\scratchpad\\\\ref.png''\")",
+      "Bash(powershell -Command \"New-Item -ItemType Directory -Force -Path ''C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\scratchpad''; Invoke-WebRequest -Uri ''https://dreambot.org/guides/scripter-guide/how-to/images/woodcutting_guide_clean_script.png'' -OutFile ''C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\scratchpad\\\\ref.png''\")",
+      "Bash(where:*)",
+      "Bash(winget install:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth status:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" repo create startpure --public --description \"StartPure\")",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth login --hostname github.com --git-protocol https --web)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
