@@ -11,6 +11,7 @@ import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.wrappers.interactive.NPC;
+import org.dreambot.api.Client;
 import org.dreambot.scripts.startpure.Constants;
 import org.dreambot.scripts.startpure.DiscordNotifier;
 import org.dreambot.scripts.startpure.ScriptContext;
@@ -124,7 +125,7 @@ public class FightTask implements ScriptTask {
 
     private void sendLevelNotification(String skill, int level) {
         ctx.log(skill + " leveled up to " + level + "! Sending Discord notification.");
-        String message = "**" + Constants.ACCOUNT_CREDENTIALS.split(":")[0] + "** — **" + skill + "** leveled up to **" + level + "**";
+        String message = "**" + Client.getUsername() + "** — **" + skill + "** leveled up to **" + level + "**";
         new Thread(() -> DiscordNotifier.sendNotification(Constants.DISCORD_WEBHOOK_URL, message)).start();
     }
 

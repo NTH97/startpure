@@ -11,7 +11,7 @@ public final class Constants {
     public static final int TRADE_WORLD = 308;
 
     // Trade partner
-    public static final String TRADE_PARTNER = "Ola meu chapa";
+    public static final String TRADE_PARTNER = "ridiculous a";
 
     // Weapon IDs
     public static final int IRON_SCIMITAR = 1323;
@@ -41,10 +41,7 @@ public final class Constants {
     public static final Area LUMBRIDGE_BANK_AREA = new Area(3207, 3217, 3210, 3220, 2);
 
     // Discord
-    public static final String DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/YOUR_WEBHOOK_HERE";
-
-    // Account
-    public static final String ACCOUNT_CREDENTIALS = "login:password";
+    public static final String DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1471237574537384139/sKyQEN8uF79osMNVs76nnf_n3Uc1UpdmgoxgYuGRJqugmLoQBPhCa2yUy0yIRFTHvvbB";
 
     // Config
     public static final int EAT_HP_PERCENT = 50;
