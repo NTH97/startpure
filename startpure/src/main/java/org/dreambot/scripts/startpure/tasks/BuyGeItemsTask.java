@@ -20,7 +20,7 @@ public class BuyGeItemsTask implements ScriptTask {
 
         if (ctx.getBuyIndex() >= buyList.length) {
             ctx.log("All GE items purchased and collected.");
-            ctx.setState(ScriptState.EQUIP_GEAR);
+            ctx.setState(ScriptState.DEPOSIT_INVENTORY);
             return 600;
         }
 

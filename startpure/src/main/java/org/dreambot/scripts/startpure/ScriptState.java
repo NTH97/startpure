@@ -8,6 +8,8 @@ public enum ScriptState {
     WAIT_FOR_GOLD("Wait for gold"),
     BUY_GE_ITEMS("Buy GE items"),
     COLLECT_GE_ITEMS("Collect GE items"),
+    DEPOSIT_INVENTORY("Deposit inventory"),
+    WITHDRAW_GEAR("Withdraw gear"),
     EQUIP_GEAR("Equip gear"),
     WALK_TO_TRAINING("Walk to training area"),
     FIGHT("Fight — train combat"),

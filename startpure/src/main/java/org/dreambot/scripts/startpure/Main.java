@@ -65,6 +65,8 @@ public class Main extends AbstractScript {
         tasks.put(ScriptState.WAIT_FOR_GOLD, new WaitForGoldTask(ctx));
         tasks.put(ScriptState.BUY_GE_ITEMS, new BuyGeItemsTask(ctx));
         tasks.put(ScriptState.COLLECT_GE_ITEMS, new CollectGeItemsTask(ctx));
+        tasks.put(ScriptState.DEPOSIT_INVENTORY, new DepositInventoryTask(ctx));
+        tasks.put(ScriptState.WITHDRAW_GEAR, new WithdrawGearTask(ctx));
         tasks.put(ScriptState.EQUIP_GEAR, new EquipGearTask(ctx));
         tasks.put(ScriptState.WALK_TO_TRAINING, new WalkToTrainingTask(ctx));
         tasks.put(ScriptState.FIGHT, new FightTask(ctx));
