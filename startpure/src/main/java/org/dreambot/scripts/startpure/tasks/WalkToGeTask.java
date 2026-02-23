@@ -36,14 +36,26 @@ public class WalkToGeTask implements ScriptTask {
     private void configureSettings() {
         ctx.log("[Settings] Configuring game settings...");
 
-        ClientSettings.toggleLevelUpInterface(false);
-        ctx.log("[Settings] Disabled level-up interface.");
+        if (ClientSettings.isLevelUpInterfaceEnabled()) {
+            ClientSettings.toggleLevelUpInterface(false);
+            ctx.log("[Settings] Disabled level-up interface.");
+        } else {
+            ctx.log("[Settings] Level-up interface already disabled.");
+        }
 
-        ClientSettings.toggleTradeDelay(false);
-        ctx.log("[Settings] Disabled trade accept delay.");
+        if (ClientSettings.isTradeDelayEnabled()) {
+            ClientSettings.toggleTradeDelay(false);
+            ctx.log("[Settings] Disabled trade accept delay.");
+        } else {
+            ctx.log("[Settings] Trade accept delay already disabled.");
+        }
 
-        ClientSettings.toggleWorldHopConfirmation(false);
-        ctx.log("[Settings] Disabled world hop confirmation.");
+        if (ClientSettings.isWorldHopConfirmationEnabled()) {
+            ClientSettings.toggleWorldHopConfirmation(false);
+            ctx.log("[Settings] Disabled world hop confirmation.");
+        } else {
+            ctx.log("[Settings] World hop confirmation already disabled.");
+        }
 
         ctx.log("[Settings] Game settings configured.");
     }
