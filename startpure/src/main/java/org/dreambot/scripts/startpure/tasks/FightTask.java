@@ -13,9 +13,12 @@ import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.utilities.AccountManager;
 import org.dreambot.api.wrappers.interactive.NPC;
 import org.dreambot.api.Client;
+import org.dreambot.api.methods.tabs.Tab;
+import org.dreambot.api.methods.tabs.Tabs;
 import org.dreambot.api.wrappers.interactive.Player;
 import org.dreambot.scripts.startpure.Constants;
 import org.dreambot.scripts.startpure.DiscordNotifier;
+import org.dreambot.scripts.startpure.HumanBehavior;
 import org.dreambot.scripts.startpure.ScriptContext;
 import org.dreambot.scripts.startpure.ScriptState;
 import org.dreambot.scripts.startpure.ScriptTask;
@@ -32,6 +35,9 @@ public class FightTask implements ScriptTask {
 
     @Override
     public int execute() {
+        HumanBehavior hb = ctx.getHumanBehavior();
+        hb.tick();
+
         int atk = Skills.getRealLevel(Skill.ATTACK);
         int str = Skills.getRealLevel(Skill.STRENGTH);
         int atkXp = Skills.getExperience(Skill.ATTACK);
@@ -55,14 +61,33 @@ public class FightTask implements ScriptTask {
             return 600;
         }
 
+        // ── Human behavior: random AFK pause ──
+        if (hb.shouldPause()) {
+            int pause = hb.getPauseDuration();
+            ctx.log("[Human] Pausing for " + (pause / 1000) + "s (fatigue: " +
+                    String.format("%.0f%%", hb.getFatigue() * 100) + ")");
+            return pause;
+        }
+
+        // ── Human behavior: idle camera movement ──
+        if (hb.shouldMoveCameraIdle()) {
+            hb.doIdleCameraMove();
+            return hb.modifySleep(300, 800);
+        }
+
+        // ── Human behavior: repetitive action (check inventory tab) ──
+        if (hb.shouldRepetitiveAction()) {
+            Tabs.open(Tab.INVENTORY);
+            return hb.modifySleep(400, 1000);
+        }
+
         // Weapon upgrade check (stays level-based — OSRS equip requirements are levels)
         WeaponProgression bestWeapon = WeaponProgression.getBestForLevel(atk);
         if (!Equipment.contains(bestWeapon.getItemId())) {
             if (Inventory.contains(bestWeapon.getItemId())) {
                 equipItem(bestWeapon.getItemId());
-                return Calculations.random(600, 1200);
+                return hb.modifySleep(600, 1200);
             } else {
-                // Need to bank for the upgraded weapon
                 return bankForWeaponAndFood(bestWeapon.getItemId());
             }
         }
@@ -75,9 +100,8 @@ public class FightTask implements ScriptTask {
         if (hpPercent <= Constants.EAT_HP_PERCENT) {
             if (Inventory.contains(Constants.SALMON)) {
                 Inventory.interact(Constants.SALMON, "Eat");
-                return Calculations.random(600, 1200);
+                return hb.modifySleep(600, 1200);
             } else {
-                // Rebank for food
                 return bankForFood();
             }
         }
@@ -97,13 +121,51 @@ public class FightTask implements ScriptTask {
                     && !npc.isInCombat()
                     && npc.getHealthPercent() > 0
             );
+
             if (target != null) {
+                // ── Human behavior: change of mind — pick a different target ──
+                if (hb.shouldChangeOfMind()) {
+                    NPC other = NPCs.closest(npc ->
+                            npc != null && npc != target
+                            && npc.getName() != null
+                            && npc.getName().equals(location.getNpcName())
+                            && location.getArea().contains(npc)
+                            && !npc.isInCombat()
+                            && npc.getHealthPercent() > 0
+                    );
+                    if (other != null) {
+                        ctx.log("[Human] Changed mind, switching target");
+                        other.interact("Attack");
+                        ctx.sleepUntil(() -> Players.getLocal().isInCombat(), 3000, 300);
+                        return hb.modifySleep(600, 1200);
+                    }
+                }
+
+                // ── Human behavior: misclick near the NPC ──
+                if (hb.shouldMisclick()) {
+                    ctx.log("[Human] Misclick!");
+                    hb.doMisclick(target);
+                    return hb.failureDelay();
+                }
+
                 target.interact("Attack");
+
+                // ── Human behavior: impatient double-click ──
+                if (hb.shouldDoubleClick()) {
+                    ctx.sleepUntil(() -> false, Calculations.random(80, 200), 50);
+                    target.interact("Attack");
+                }
+
                 ctx.sleepUntil(() -> Players.getLocal().isInCombat(), 3000, 300);
+
+                // If attack didn't connect — human doesn't always wait longer
+                if (!Players.getLocal().isInCombat()) {
+                    return hb.failureDelay();
+                }
             }
         }
 
-        return Calculations.random(600, 1200);
+        return hb.modifySleep(600, 1200);
     }
 
     private void checkLevelUp(int atk, int str) {

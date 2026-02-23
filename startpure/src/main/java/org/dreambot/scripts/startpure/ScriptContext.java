@@ -17,6 +17,7 @@ public class ScriptContext {
     private int notifyRetries;
     private int lastAttackLevel;
     private int lastStrengthLevel;
+    private final HumanBehavior humanBehavior;
 
     // Randomized XP targets for each milestone
     private final int targetAtkXp20;
@@ -37,6 +38,7 @@ public class ScriptContext {
         this.notifyRetries = 0;
         this.lastAttackLevel = -1;
         this.lastStrengthLevel = -1;
+        this.humanBehavior = new HumanBehavior();
 
         // Generate randomized XP targets once
         this.targetAtkXp20 = Constants.XP_LEVEL_20 + randomXpOffset();
@@ -131,6 +133,8 @@ public class ScriptContext {
     public void setLastStrengthLevel(int lastStrengthLevel) {
         this.lastStrengthLevel = lastStrengthLevel;
     }
+
+    public HumanBehavior getHumanBehavior() { return humanBehavior; }
 
     public int getTargetAtkXp20() { return targetAtkXp20; }
     public int getTargetAtkXp30() { return targetAtkXp30; }

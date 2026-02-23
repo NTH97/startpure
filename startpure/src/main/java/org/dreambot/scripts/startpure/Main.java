@@ -108,7 +108,7 @@ public class Main extends AbstractScript {
 
         int x = 10;
         int w = 220;
-        int h = 120;
+        int h = 148;
         int padding = 6;
 
         // Position dynamically above the chatbox
@@ -166,8 +166,22 @@ public class Main extends AbstractScript {
         drawSkillStat(g2, px + 68, py, new Color(60, 180, 60), "\u270A", "Str", str);
         drawSkillStat(g2, px + 136, py, new Color(230, 70, 70), "\u2764", "HP", hpCurrent + "/" + hp);
 
+        // Behavior stats
+        HumanBehavior hb = ctx.getHumanBehavior();
+        py += 20;
+        g2.setFont(new Font("Arial", Font.PLAIN, 10));
+        g2.setColor(new Color(120, 120, 130));
+        g2.drawString("FOCUS", px, py);
+        g2.drawString("FATIGUE", px + 72, py);
+        g2.drawString("ATTENTION", px + 144, py);
+
+        py += 12;
+        drawBar(g2, px, py, 55, hb.getFocusLevel(), new Color(60, 180, 60), new Color(220, 60, 60));
+        drawBar(g2, px + 72, py, 55, hb.getFatigue(), new Color(220, 160, 40), new Color(220, 60, 60));
+        drawBar(g2, px + 144, py, 55, hb.getAttention(), new Color(100, 160, 255), new Color(60, 60, 80));
+
         // Current task
-        py += 24;
+        py += 16;
         g2.setColor(new Color(120, 120, 130));
         g2.setFont(new Font("Arial", Font.PLAIN, 10));
         g2.drawString("TASK", px, py);
@@ -176,6 +190,22 @@ public class Main extends AbstractScript {
         g2.setColor(new Color(100, 180, 255));
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         g2.drawString(ctx.getState().getLabel(), px, py);
+    }
+
+    private void drawBar(Graphics2D g2, int x, int y, int width, double value, Color highColor, Color lowColor) {
+        int barHeight = 5;
+        float ratio = (float) Math.max(0, Math.min(1, value));
+
+        // Background
+        g2.setColor(new Color(40, 40, 50));
+        g2.fillRoundRect(x, y, width, barHeight, 3, 3);
+
+        // Fill — interpolate color
+        int r = (int) (lowColor.getRed() + (highColor.getRed() - lowColor.getRed()) * ratio);
+        int gr = (int) (lowColor.getGreen() + (highColor.getGreen() - lowColor.getGreen()) * ratio);
+        int b = (int) (lowColor.getBlue() + (highColor.getBlue() - lowColor.getBlue()) * ratio);
+        g2.setColor(new Color(r, gr, b));
+        g2.fillRoundRect(x, y, (int) (width * ratio), barHeight, 3, 3);
     }
 
     private void drawSkillStat(Graphics2D g2, int x, int y, Color iconColor, String icon, String label, Object value) {
