@@ -124,7 +124,7 @@ public class FightTask implements ScriptTask {
 
     private void sendLevelNotification(String skill, int level) {
         ctx.log(skill + " leveled up to " + level + "! Sending Discord notification.");
-        String message = "**" + skill + "** leveled up to **" + level + "**";
+        String message = "**" + Constants.ACCOUNT_CREDENTIALS.split(":")[0] + "** — **" + skill + "** leveled up to **" + level + "**";
         new Thread(() -> DiscordNotifier.sendNotification(Constants.DISCORD_WEBHOOK_URL, message)).start();
     }
 
