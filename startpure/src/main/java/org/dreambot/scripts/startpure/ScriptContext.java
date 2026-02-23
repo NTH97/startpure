@@ -18,6 +18,7 @@ public class ScriptContext {
     private int lastAttackLevel;
     private int lastStrengthLevel;
     private final HumanBehavior humanBehavior;
+    private boolean settingsConfigured;
 
     // Randomized XP targets for each milestone
     private final int targetAtkXp20;
@@ -39,6 +40,7 @@ public class ScriptContext {
         this.lastAttackLevel = -1;
         this.lastStrengthLevel = -1;
         this.humanBehavior = new HumanBehavior();
+        this.settingsConfigured = false;
 
         // Generate randomized XP targets once
         this.targetAtkXp20 = Constants.XP_LEVEL_20 + randomXpOffset();
@@ -135,6 +137,9 @@ public class ScriptContext {
     }
 
     public HumanBehavior getHumanBehavior() { return humanBehavior; }
+
+    public boolean isSettingsConfigured() { return settingsConfigured; }
+    public void setSettingsConfigured(boolean settingsConfigured) { this.settingsConfigured = settingsConfigured; }
 
     public int getTargetAtkXp20() { return targetAtkXp20; }
     public int getTargetAtkXp30() { return targetAtkXp30; }
