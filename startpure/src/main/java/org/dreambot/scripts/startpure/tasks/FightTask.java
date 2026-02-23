@@ -81,8 +81,9 @@ public class FightTask implements ScriptTask {
             return hb.modifySleep(400, 1000);
         }
 
-        // Weapon upgrade check (stays level-based — OSRS equip requirements are levels)
-        WeaponProgression bestWeapon = WeaponProgression.getBestForLevel(atk);
+        // Weapon upgrade check (XP-based with randomized thresholds)
+        WeaponProgression bestWeapon = WeaponProgression.getBestForXp(
+                atkXp, ctx.getTargetAtkXp20(), ctx.getTargetAtkXp30(), ctx.getTargetAtkXp40());
         if (!Equipment.contains(bestWeapon.getItemId())) {
             if (Inventory.contains(bestWeapon.getItemId())) {
                 equipItem(bestWeapon.getItemId());

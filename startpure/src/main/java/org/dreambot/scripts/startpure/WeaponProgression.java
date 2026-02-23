@@ -37,4 +37,16 @@ public enum WeaponProgression {
         }
         return best;
     }
+
+    /**
+     * Returns the best weapon based on randomized XP thresholds.
+     * Since the thresholds are always >= the level XP, the player
+     * is guaranteed to have the required level when the threshold is met.
+     */
+    public static WeaponProgression getBestForXp(int atkXp, int xp20, int xp30, int xp40) {
+        if (atkXp >= xp40) return RUNE;
+        if (atkXp >= xp30) return ADAMANT;
+        if (atkXp >= xp20) return MITHRIL;
+        return IRON;
+    }
 }
