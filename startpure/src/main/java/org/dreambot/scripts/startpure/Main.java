@@ -5,6 +5,8 @@ import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.scripts.startpure.tasks.*;
 
+import javax.swing.*;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ import java.util.Map;
         name = "Start Pure",
         description = "Automated pure account starter - trains 40 Attack and 40 Strength",
         author = "Developer",
-        version = 1.1,
+        version = 1.2,
         category = Category.COMBAT,
         image = ""
 )
@@ -23,6 +25,24 @@ public class Main extends AbstractScript {
 
     @Override
     public void onStart() {
+        ScriptState[] selectableStates = Arrays.stream(ScriptState.values())
+                .filter(s -> s != ScriptState.FINISHED)
+                .toArray(ScriptState[]::new);
+
+        JComboBox<ScriptState> combo = new JComboBox<>(selectableStates);
+        combo.setSelectedItem(ScriptState.HOP_TO_TRADE_WORLD);
+
+        int result = JOptionPane.showConfirmDialog(
+                null, combo, "Start Pure — Select starting state",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result != JOptionPane.OK_OPTION) {
+            stop();
+            return;
+        }
+
+        ScriptState startState = (ScriptState) combo.getSelectedItem();
+
         int[][] buyList = {
                 {Constants.IRON_SCIMITAR, 1, 5000},
                 {Constants.MITHRIL_SCIMITAR, 1, 5000},
@@ -35,7 +55,7 @@ public class Main extends AbstractScript {
                 {Constants.SALMON, Constants.SALMON_BUY_QUANTITY, 200}
         };
 
-        ctx = new ScriptContext(this, ScriptState.HOP_TO_TRADE_WORLD, buyList);
+        ctx = new ScriptContext(this, startState, buyList);
 
         tasks = new EnumMap<>(ScriptState.class);
         tasks.put(ScriptState.HOP_TO_TRADE_WORLD, new HopToTradeWorldTask(ctx));
