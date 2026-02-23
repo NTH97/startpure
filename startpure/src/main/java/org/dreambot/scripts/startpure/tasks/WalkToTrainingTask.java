@@ -20,9 +20,9 @@ public class WalkToTrainingTask implements ScriptTask {
 
     @Override
     public int execute() {
-        int atk = Skills.getRealLevel(Skill.ATTACK);
-        int str = Skills.getRealLevel(Skill.STRENGTH);
-        TrainingLocation location = TrainingLocation.getForLevels(atk, str);
+        int atkXp = Skills.getExperience(Skill.ATTACK);
+        int strXp = Skills.getExperience(Skill.STRENGTH);
+        TrainingLocation location = TrainingLocation.getForXp(atkXp, strXp, ctx.getTargetCowsXp());
 
         if (location.getArea().contains(Players.getLocal())) {
             ctx.setState(ScriptState.FIGHT);

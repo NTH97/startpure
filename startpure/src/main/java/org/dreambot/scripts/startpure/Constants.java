@@ -43,12 +43,19 @@ public final class Constants {
     // Discord
     public static final String DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1471237574537384139/sKyQEN8uF79osMNVs76nnf_n3Uc1UpdmgoxgYuGRJqugmLoQBPhCa2yUy0yIRFTHvvbB";
 
+    // XP thresholds (OSRS exact values)
+    public static final int XP_LEVEL_20 = 4470;
+    public static final int XP_LEVEL_30 = 13363;
+    public static final int XP_LEVEL_40 = 37224;
+
+    // Randomization range added on top of each XP threshold
+    public static final int XP_RANDOM_MIN = 0;
+    public static final int XP_RANDOM_MAX = 600;
+
     // Config
     public static final int EAT_HP_PERCENT = 50;
     public static final int SALMON_WITHDRAW_AMOUNT = 20;
     public static final int SALMON_BUY_QUANTITY = 100;
-    public static final int TARGET_ATTACK = 40;
-    public static final int TARGET_STRENGTH = 40;
     public static final int GOLD_THRESHOLD = 100000;
     public static final int TRADE_FAILSAFE_MAX = 10;
 }

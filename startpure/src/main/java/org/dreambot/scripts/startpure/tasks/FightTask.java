@@ -10,8 +10,10 @@ import org.dreambot.api.methods.interactive.Players;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
+import org.dreambot.api.utilities.AccountManager;
 import org.dreambot.api.wrappers.interactive.NPC;
 import org.dreambot.api.Client;
+import org.dreambot.api.wrappers.interactive.Player;
 import org.dreambot.scripts.startpure.Constants;
 import org.dreambot.scripts.startpure.DiscordNotifier;
 import org.dreambot.scripts.startpure.ScriptContext;
@@ -32,18 +34,20 @@ public class FightTask implements ScriptTask {
     public int execute() {
         int atk = Skills.getRealLevel(Skill.ATTACK);
         int str = Skills.getRealLevel(Skill.STRENGTH);
+        int atkXp = Skills.getExperience(Skill.ATTACK);
+        int strXp = Skills.getExperience(Skill.STRENGTH);
 
         // Level-up detection
         checkLevelUp(atk, str);
 
-        // Goal check
-        if (atk >= Constants.TARGET_ATTACK && str >= Constants.TARGET_STRENGTH) {
-            ctx.log("Target levels reached! Attack: " + atk + ", Strength: " + str);
+        // Goal check (XP-based)
+        if (atkXp >= ctx.getTargetAtkXp40() && strXp >= ctx.getTargetStrXp40()) {
+            ctx.log("Target XP reached! Attack XP: " + atkXp + ", Strength XP: " + strXp);
             ctx.setState(ScriptState.NOTIFY_DISCORD);
             return 600;
         }
 
-        TrainingLocation location = TrainingLocation.getForLevels(atk, str);
+        TrainingLocation location = TrainingLocation.getForXp(atkXp, strXp, ctx.getTargetCowsXp());
 
         // Location check
         if (!location.getArea().contains(Players.getLocal())) {
@@ -51,7 +55,7 @@ public class FightTask implements ScriptTask {
             return 600;
         }
 
-        // Weapon upgrade check
+        // Weapon upgrade check (stays level-based — OSRS equip requirements are levels)
         WeaponProgression bestWeapon = WeaponProgression.getBestForLevel(atk);
         if (!Equipment.contains(bestWeapon.getItemId())) {
             if (Inventory.contains(bestWeapon.getItemId())) {
@@ -63,8 +67,8 @@ public class FightTask implements ScriptTask {
             }
         }
 
-        // Combat style management
-        setCombatStyleForLevels(atk, str);
+        // Combat style management (XP-based)
+        setCombatStyle(atkXp, strXp);
 
         // Eat food if needed
         int hpPercent = (Skills.getBoostedLevel(Skill.HITPOINTS) * 100) / Skills.getRealLevel(Skill.HITPOINTS);
@@ -125,23 +129,24 @@ public class FightTask implements ScriptTask {
 
     private void sendLevelNotification(String skill, int level) {
         ctx.log(skill + " leveled up to " + level + "! Sending Discord notification.");
-        String message = "**" + Client.getUsername() + "** — **" + skill + "** leveled up to **" + level + "**";
+        String message = "**" + Players.getLocal().getName() + "** — **" + skill + "** leveled up to **" + level + "**";
         new Thread(() -> DiscordNotifier.sendNotification(Constants.DISCORD_WEBHOOK_URL, message)).start();
     }
 
-    private void setCombatStyleForLevels(int atk, int str) {
-        // Alternating training: atk→20, str→20, atk→30, str→30, atk→40, str→40
+    private void setCombatStyle(int atkXp, int strXp) {
+        // Alternating training using randomized XP thresholds:
+        // atk→20xp, str→20xp, atk→30xp, str→30xp, atk→40xp, str→40xp
         // Combat mode index: 0 = Accurate (Attack), 1 = Aggressive (Strength)
         int desiredStyle;
-        if (atk < 20) {
+        if (atkXp < ctx.getTargetAtkXp20()) {
             desiredStyle = 0; // Attack
-        } else if (str < 20) {
+        } else if (strXp < ctx.getTargetStrXp20()) {
             desiredStyle = 1; // Strength
-        } else if (atk < 30) {
+        } else if (atkXp < ctx.getTargetAtkXp30()) {
             desiredStyle = 0;
-        } else if (str < 30) {
+        } else if (strXp < ctx.getTargetStrXp30()) {
             desiredStyle = 1;
-        } else if (atk < 40) {
+        } else if (atkXp < ctx.getTargetAtkXp40()) {
             desiredStyle = 0;
         } else {
             desiredStyle = 1; // Strength to 40
