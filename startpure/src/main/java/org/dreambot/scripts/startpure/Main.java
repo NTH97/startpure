@@ -6,6 +6,7 @@ import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.scripts.startpure.tasks.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
         name = "Start Pure",
         description = "Automated pure account starter - trains 40 Attack and 40 Strength",
         author = "Developer",
-        version = 1.2,
+        version = 1.4,
         category = Category.COMBAT,
         image = ""
 )
@@ -22,6 +23,7 @@ public class Main extends AbstractScript {
 
     private ScriptContext ctx;
     private Map<ScriptState, ScriptTask> tasks;
+    private long startTime;
 
     @Override
     public void onStart() {
@@ -72,6 +74,7 @@ public class Main extends AbstractScript {
         tasks.put(ScriptState.FIGHT, new FightTask(ctx));
         tasks.put(ScriptState.NOTIFY_DISCORD, new NotifyDiscordTask(ctx));
 
+        startTime = System.currentTimeMillis();
         log("Start Pure script started. State: " + ctx.getState());
     }
 
@@ -89,5 +92,42 @@ public class Main extends AbstractScript {
         }
 
         return 600;
+    }
+
+    @Override
+    public void onPaint(Graphics g) {
+        if (ctx == null) return;
+
+        long elapsed = System.currentTimeMillis() - startTime;
+        long seconds = (elapsed / 1000) % 60;
+        long minutes = (elapsed / 60000) % 60;
+        long hours = elapsed / 3600000;
+        String runtime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        int x = 10;
+        int y = 340;
+
+        Graphics2D g2 = (Graphics2D) g;
+
+        // Background
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRoundRect(x, y, 200, 60, 10, 10);
+
+        // Border
+        g2.setColor(new Color(255, 255, 255, 80));
+        g2.drawRoundRect(x, y, 200, 60, 10, 10);
+
+        // Title
+        g2.setFont(new Font("Arial", Font.BOLD, 14));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Start Pure", x + 10, y + 18);
+
+        // Runtime
+        g2.setFont(new Font("Arial", Font.PLAIN, 12));
+        g2.setColor(new Color(200, 200, 200));
+        g2.drawString("Runtime: " + runtime, x + 10, y + 35);
+
+        // Current task
+        g2.drawString("Task: " + ctx.getState().getLabel(), x + 10, y + 52);
     }
 }
