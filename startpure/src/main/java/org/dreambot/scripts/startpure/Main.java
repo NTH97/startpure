@@ -2,7 +2,9 @@ package org.dreambot.scripts.startpure;
 
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
+import org.dreambot.api.methods.widget.Widgets;
 import org.dreambot.api.script.AbstractScript;
+import org.dreambot.api.wrappers.widgets.WidgetChild;
 import org.dreambot.api.script.Category;
 import org.dreambot.api.script.ScriptManifest;
 import org.dreambot.scripts.startpure.tasks.*;
@@ -105,9 +107,17 @@ public class Main extends AbstractScript {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         int x = 10;
-        int y = 290;
         int w = 220;
         int h = 120;
+        int padding = 6;
+
+        // Position dynamically above the chatbox
+        int chatTop = g2.getClipBounds() != null ? g2.getClipBounds().height - h - padding : 503 - h - padding;
+        WidgetChild chatbox = Widgets.get(162, 0);
+        if (chatbox != null && chatbox.isVisible()) {
+            chatTop = chatbox.getY() - h - padding;
+        }
+        int y = chatTop;
 
         // Background
         g2.setColor(new Color(20, 20, 30, 200));
