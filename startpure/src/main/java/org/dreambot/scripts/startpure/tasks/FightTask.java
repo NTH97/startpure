@@ -12,6 +12,7 @@ import org.dreambot.api.methods.skills.Skills;
 import org.dreambot.api.methods.walking.impl.Walking;
 import org.dreambot.api.wrappers.interactive.NPC;
 import org.dreambot.scripts.startpure.Constants;
+import org.dreambot.scripts.startpure.DiscordNotifier;
 import org.dreambot.scripts.startpure.ScriptContext;
 import org.dreambot.scripts.startpure.ScriptState;
 import org.dreambot.scripts.startpure.ScriptTask;
@@ -30,6 +31,9 @@ public class FightTask implements ScriptTask {
     public int execute() {
         int atk = Skills.getRealLevel(Skill.ATTACK);
         int str = Skills.getRealLevel(Skill.STRENGTH);
+
+        // Level-up detection
+        checkLevelUp(atk, str);
 
         // Goal check
         if (atk >= Constants.TARGET_ATTACK && str >= Constants.TARGET_STRENGTH) {
@@ -95,6 +99,33 @@ public class FightTask implements ScriptTask {
         }
 
         return Calculations.random(600, 1200);
+    }
+
+    private void checkLevelUp(int atk, int str) {
+        int lastAtk = ctx.getLastAttackLevel();
+        int lastStr = ctx.getLastStrengthLevel();
+
+        // Initialize on first call
+        if (lastAtk == -1) {
+            ctx.setLastAttackLevel(atk);
+            ctx.setLastStrengthLevel(str);
+            return;
+        }
+
+        if (atk > lastAtk) {
+            ctx.setLastAttackLevel(atk);
+            sendLevelNotification("Attack", atk);
+        }
+        if (str > lastStr) {
+            ctx.setLastStrengthLevel(str);
+            sendLevelNotification("Strength", str);
+        }
+    }
+
+    private void sendLevelNotification(String skill, int level) {
+        ctx.log(skill + " leveled up to " + level + "! Sending Discord notification.");
+        String message = "**" + skill + "** leveled up to **" + level + "**";
+        new Thread(() -> DiscordNotifier.sendNotification(Constants.DISCORD_WEBHOOK_URL, message)).start();
     }
 
     private void setCombatStyleForLevels(int atk, int str) {

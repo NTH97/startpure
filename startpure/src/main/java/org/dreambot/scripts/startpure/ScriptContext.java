@@ -14,6 +14,8 @@ public class ScriptContext {
     private boolean currentItemCollected;
     private int tradeFailsafe;
     private int notifyRetries;
+    private int lastAttackLevel;
+    private int lastStrengthLevel;
 
     public ScriptContext(AbstractScript script, ScriptState initialState, int[][] buyList) {
         this.script = script;
@@ -23,6 +25,8 @@ public class ScriptContext {
         this.currentItemCollected = true;
         this.tradeFailsafe = 0;
         this.notifyRetries = 0;
+        this.lastAttackLevel = -1;
+        this.lastStrengthLevel = -1;
     }
 
     public AbstractScript getScript() {
@@ -83,5 +87,21 @@ public class ScriptContext {
 
     public void setNotifyRetries(int notifyRetries) {
         this.notifyRetries = notifyRetries;
+    }
+
+    public int getLastAttackLevel() {
+        return lastAttackLevel;
+    }
+
+    public void setLastAttackLevel(int lastAttackLevel) {
+        this.lastAttackLevel = lastAttackLevel;
+    }
+
+    public int getLastStrengthLevel() {
+        return lastStrengthLevel;
+    }
+
+    public void setLastStrengthLevel(int lastStrengthLevel) {
+        this.lastStrengthLevel = lastStrengthLevel;
     }
 }
