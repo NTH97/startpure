@@ -1,9 +1,9 @@
 package org.dreambot.scripts.startpure.tasks;
 
-import org.dreambot.api.Client;
 import org.dreambot.api.methods.Calculations;
 import org.dreambot.api.methods.skills.Skill;
 import org.dreambot.api.methods.skills.Skills;
+import org.dreambot.api.utilities.AccountManager;
 import org.dreambot.scripts.startpure.Constants;
 import org.dreambot.scripts.startpure.DiscordNotifier;
 import org.dreambot.scripts.startpure.ScriptContext;
@@ -22,7 +22,7 @@ public class NotifyDiscordTask implements ScriptTask {
     public int execute() {
         int atk = Skills.getRealLevel(Skill.ATTACK);
         int str = Skills.getRealLevel(Skill.STRENGTH);
-        String message = "**" + Client.getUsername() + "** — **Script finished!** Attack: **" + atk + "** | Strength: **" + str + "**";
+        String message = "**" + AccountManager.getAccountNickname() + "** — **Script finished!** Attack: **" + atk + "** | Strength: **" + str + "**";
         boolean success = DiscordNotifier.sendNotification(Constants.DISCORD_WEBHOOK_URL, message);
         if (success) {
             ctx.log("Discord notification sent successfully.");
