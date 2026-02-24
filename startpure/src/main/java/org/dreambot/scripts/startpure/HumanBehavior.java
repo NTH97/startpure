@@ -21,19 +21,19 @@ public class HumanBehavior {
     private final long startTime;
     private long lastPauseTime;
 
-    // How many minutes until fatigue reaches ~0.5
-    private static final double FATIGUE_RATE = 0.007;   // ~0.42 after 60 min
-    // Focus recovery when a pause happens
-    private static final double PAUSE_FOCUS_RECOVERY = 0.15;
-    // Attention drift per tick
-    private static final double ATTENTION_DRIFT = 0.08;
+    private final double fatigueRate;          // base ~0.007, randomized 0.005 – 0.009
+    private final double pauseFocusRecovery;   // base ~0.15,  randomized 0.10 – 0.20
+    private final double attentionDrift;       // base ~0.08,  randomized 0.05 – 0.11
 
     public HumanBehavior() {
         this.startTime = System.currentTimeMillis();
         this.lastPauseTime = startTime;
-        this.focusLevel = 0.85 + Math.random() * 0.15;   // 0.85 – 1.00
-        this.fatigue = Math.random() * 0.15;              // 0.00 – 0.15
-        this.attention = 0.80 + Math.random() * 0.20;     // 0.80 – 1.00
+        this.focusLevel = 0.85 + Math.random() * 0.15;          // 0.85 – 1.00
+        this.fatigue = Math.random() * 0.15;                     // 0.00 – 0.15
+        this.attention = 0.80 + Math.random() * 0.20;            // 0.80 – 1.00
+        this.fatigueRate = 0.005 + Math.random() * 0.004;        // 0.005 – 0.009
+        this.pauseFocusRecovery = 0.10 + Math.random() * 0.10;   // 0.10 – 0.20
+        this.attentionDrift = 0.05 + Math.random() * 0.06;       // 0.05 – 0.11
     }
 
     /**
@@ -44,14 +44,14 @@ public class HumanBehavior {
         double minutesSincePause = (System.currentTimeMillis() - lastPauseTime) / 60000.0;
 
         // Fatigue increases over the whole session, slowly
-        fatigue = Math.min(0.85, minutesRunning * FATIGUE_RATE);
+        fatigue = Math.min(0.85, minutesRunning * fatigueRate);
 
         // Focus degrades with fatigue + time since last pause
         double baseFocus = 1.0 - fatigue * 0.6 - Math.min(minutesSincePause * 0.005, 0.15);
         focusLevel = clamp(baseFocus + (Math.random() - 0.5) * 0.03, 0.25, 0.98);
 
         // Attention drifts randomly — can spike or drop
-        double drift = (Math.random() - 0.48) * ATTENTION_DRIFT;
+        double drift = (Math.random() - 0.48) * attentionDrift;
         attention = clamp(attention + drift, 0.2, 1.0);
 
         // Rare attention "reset" — simulates player refocusing
@@ -137,7 +137,7 @@ public class HumanBehavior {
 
         // After pause, recover some focus
         lastPauseTime = System.currentTimeMillis();
-        focusLevel = clamp(focusLevel + PAUSE_FOCUS_RECOVERY, 0.25, 0.98);
+        focusLevel = clamp(focusLevel + pauseFocusRecovery, 0.25, 0.98);
         attention = clamp(attention + 0.1, 0.2, 1.0);
 
         return duration;
