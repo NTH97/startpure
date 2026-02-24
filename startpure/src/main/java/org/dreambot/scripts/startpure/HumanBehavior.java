@@ -162,7 +162,7 @@ public class HumanBehavior {
         int dx = Calculations.random(-2, 2);
         int dz = Calculations.random(-2, 2);
         if (dx == 0 && dz == 0) dx = 1;
-        Walking.walk(new Tile(npcTile.getX() + dx, npcTile.getY() + dz, npcTile.getZ()));
+        Walking.walkOnScreen(new Tile(npcTile.getX() + dx, npcTile.getY() + dz, npcTile.getZ()));
     }
 
     /**
