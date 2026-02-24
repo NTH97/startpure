@@ -31,9 +31,9 @@ public class HumanBehavior {
     public HumanBehavior() {
         this.startTime = System.currentTimeMillis();
         this.lastPauseTime = startTime;
-        this.focusLevel = 0.97;
-        this.fatigue = 0.0;
-        this.attention = 0.95;
+        this.focusLevel = 0.85 + Math.random() * 0.15;   // 0.85 – 1.00
+        this.fatigue = Math.random() * 0.15;              // 0.00 – 0.15
+        this.attention = 0.80 + Math.random() * 0.20;     // 0.80 – 1.00
     }
 
     /**
