@@ -73,9 +73,9 @@ public class HumanBehavior {
         this.failConfusedHigh = 1800 + (int)(Math.random() * 1200); // 1800 – 3000
 
         // Fatigue waves — simulates energy cycles over a long session
-        this.fatigueCyclePeriod = 40.0 + Math.random() * 50.0;     // 40 – 90 min per cycle
-        this.fatigueWaveAmplitude = 0.10 + Math.random() * 0.15;   // 0.10 – 0.25
-        this.fatigueFloor = 0.15 + Math.random() * 0.15;           // 0.15 – 0.30
+        this.fatigueCyclePeriod = 60.0 + Math.random() * 90.0;     // 60 – 150 min per cycle
+        this.fatigueWaveAmplitude = 0.05 + Math.random() * 0.10;   // 0.05 – 0.15
+        this.fatigueFloor = 0.05 + Math.random() * 0.10;           // 0.05 – 0.15
     }
 
     /**
@@ -86,11 +86,11 @@ public class HumanBehavior {
         double minutesSincePause = (System.currentTimeMillis() - lastPauseTime) / 60000.0;
 
         // Fatigue uses waves to simulate energy cycles over 24h sessions.
-        // Ramps up initially, then oscillates between tired and recovered periods.
-        double ramp = Math.min(1.0, minutesRunning * fatigueRate * 8.0); // ramps to 1.0 in ~1-2h
+        // Ramps up slowly over ~2-3h, then oscillates around a low baseline.
+        double ramp = Math.min(1.0, minutesRunning * fatigueRate * 3.0); // ramps to 1.0 in ~2-3h
         double wave = Math.sin(2.0 * Math.PI * minutesRunning / fatigueCyclePeriod);
-        double baseFatigue = fatigueFloor + ramp * (0.55 - fatigueFloor);
-        fatigue = clamp(baseFatigue + wave * fatigueWaveAmplitude, 0.0, 0.85);
+        double baseFatigue = fatigueFloor + ramp * (0.30 - fatigueFloor);
+        fatigue = clamp(baseFatigue + wave * fatigueWaveAmplitude, 0.0, 0.60);
 
         // Focus degrades with fatigue + time since last pause
         double baseFocus = 1.0 - fatigue * 0.6 - Math.min(minutesSincePause * 0.005, 0.15);
