@@ -29,6 +29,9 @@ public class HumanBehavior {
     private final double misclickBase;         // base ~0.002, randomized 0.001 – 0.004
     private final double pauseBase;            // base ~0.001, randomized 0.0005 – 0.002
     private final double doubleClickBase;      // base ~0.02,  randomized 0.01 – 0.035
+    private final double changeOfMindBase;     // base ~0.005, randomized 0.002 – 0.008
+    private final double cameraIdleBase;       // base ~0.03,  randomized 0.015 – 0.045
+    private final double repetitiveBase;       // base ~0.01,  randomized 0.005 – 0.02
 
     public HumanBehavior() {
         this.startTime = System.currentTimeMillis();
@@ -42,6 +45,9 @@ public class HumanBehavior {
         this.misclickBase = 0.001 + Math.random() * 0.003;       // 0.001 – 0.004
         this.pauseBase = 0.0005 + Math.random() * 0.0015;        // 0.0005 – 0.002
         this.doubleClickBase = 0.01 + Math.random() * 0.025;     // 0.01 – 0.035
+        this.changeOfMindBase = 0.002 + Math.random() * 0.006;   // 0.002 – 0.008
+        this.cameraIdleBase = 0.015 + Math.random() * 0.030;     // 0.015 – 0.045
+        this.repetitiveBase = 0.005 + Math.random() * 0.015;     // 0.005 – 0.02
     }
 
     /**
@@ -187,7 +193,7 @@ public class HumanBehavior {
      */
     public boolean shouldChangeOfMind() {
         // Very rare: ~0.5% at start, ~2% when fatigued and unfocused
-        double chance = 0.005 + (1.0 - attention) * 0.01 + fatigue * 0.01;
+        double chance = changeOfMindBase + (1.0 - attention) * 0.01 + fatigue * 0.01;
         return Math.random() < chance;
     }
 
@@ -195,7 +201,7 @@ public class HumanBehavior {
      * Should we randomly move the camera? Humans idle-move camera.
      */
     public boolean shouldMoveCameraIdle() {
-        return Math.random() < 0.03 + (1.0 - attention) * 0.04;
+        return Math.random() < cameraIdleBase + (1.0 - attention) * 0.04;
     }
 
     /**
@@ -213,7 +219,7 @@ public class HumanBehavior {
      * Should we do a repetitive action (e.g. check inventory, open/close tab)?
      */
     public boolean shouldRepetitiveAction() {
-        return Math.random() < 0.01 + fatigue * 0.02;
+        return Math.random() < repetitiveBase + fatigue * 0.02;
     }
 
     // ──────────────── Getters ────────────────
