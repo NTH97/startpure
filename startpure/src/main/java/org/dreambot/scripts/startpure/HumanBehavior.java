@@ -25,6 +25,11 @@ public class HumanBehavior {
     private final double pauseFocusRecovery;   // base ~0.15,  randomized 0.10 – 0.20
     private final double attentionDrift;       // base ~0.08,  randomized 0.05 – 0.11
 
+    // Randomized base probabilities per account
+    private final double misclickBase;         // base ~0.002, randomized 0.001 – 0.004
+    private final double pauseBase;            // base ~0.001, randomized 0.0005 – 0.002
+    private final double doubleClickBase;      // base ~0.02,  randomized 0.01 – 0.035
+
     public HumanBehavior() {
         this.startTime = System.currentTimeMillis();
         this.lastPauseTime = startTime;
@@ -34,6 +39,9 @@ public class HumanBehavior {
         this.fatigueRate = 0.005 + Math.random() * 0.004;        // 0.005 – 0.009
         this.pauseFocusRecovery = 0.10 + Math.random() * 0.10;   // 0.10 – 0.20
         this.attentionDrift = 0.05 + Math.random() * 0.06;       // 0.05 – 0.11
+        this.misclickBase = 0.001 + Math.random() * 0.003;       // 0.001 – 0.004
+        this.pauseBase = 0.0005 + Math.random() * 0.0015;        // 0.0005 – 0.002
+        this.doubleClickBase = 0.01 + Math.random() * 0.025;     // 0.01 – 0.035
     }
 
     /**
@@ -110,7 +118,7 @@ public class HumanBehavior {
      */
     public boolean shouldPause() {
         // At start: ~0.1%, after 1hr: ~0.8%
-        double chance = 0.001 + fatigue * 0.008 + (1.0 - attention) * 0.003;
+        double chance = pauseBase + fatigue * 0.008 + (1.0 - attention) * 0.003;
         return Math.random() < chance;
     }
 
@@ -148,7 +156,7 @@ public class HumanBehavior {
      */
     public boolean shouldMisclick() {
         // At start: ~0.2%, after 1hr: ~5%
-        double chance = 0.002 + (1.0 - focusLevel) * 0.06 + fatigue * 0.03;
+        double chance = misclickBase + (1.0 - focusLevel) * 0.06 + fatigue * 0.03;
         return Math.random() < chance;
     }
 
@@ -170,7 +178,7 @@ public class HumanBehavior {
      */
     public boolean shouldDoubleClick() {
         // ~2% at start, up to ~6% when fatigued
-        return Math.random() < 0.02 + fatigue * 0.04;
+        return Math.random() < doubleClickBase + fatigue * 0.04;
     }
 
     /**
