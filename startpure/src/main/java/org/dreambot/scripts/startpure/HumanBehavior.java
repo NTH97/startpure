@@ -33,6 +33,20 @@ public class HumanBehavior {
     private final double cameraIdleBase;       // base ~0.03,  randomized 0.015 – 0.045
     private final double repetitiveBase;       // base ~0.01,  randomized 0.005 – 0.02
 
+    // Randomized failure delay thresholds per account
+    private final double failFrustrationChance; // chance of quick frustrated re-click
+    private final int failFrustrationLow;       // min ms for frustrated click
+    private final int failFrustrationHigh;      // max ms for frustrated click
+    private final int failNormalLow;            // min ms for normal retry
+    private final int failNormalHigh;           // max ms for normal retry
+    private final int failConfusedLow;          // min ms for confused wait
+    private final int failConfusedHigh;         // max ms for confused wait
+
+    // Fatigue wave parameters for 24h sessions
+    private final double fatigueCyclePeriod;    // minutes per fatigue wave cycle
+    private final double fatigueWaveAmplitude;  // how much fatigue oscillates
+    private final double fatigueFloor;          // minimum fatigue after initial ramp
+
     public HumanBehavior() {
         this.startTime = System.currentTimeMillis();
         this.lastPauseTime = startTime;
@@ -48,6 +62,20 @@ public class HumanBehavior {
         this.changeOfMindBase = 0.002 + Math.random() * 0.006;   // 0.002 – 0.008
         this.cameraIdleBase = 0.015 + Math.random() * 0.030;     // 0.015 – 0.045
         this.repetitiveBase = 0.005 + Math.random() * 0.015;     // 0.005 – 0.02
+
+        // Failure delay profile — varies per account
+        this.failFrustrationChance = 0.20 + Math.random() * 0.25;  // 0.20 – 0.45
+        this.failFrustrationLow = 50 + (int)(Math.random() * 80);  // 50 – 130
+        this.failFrustrationHigh = 250 + (int)(Math.random() * 200); // 250 – 450
+        this.failNormalLow = 300 + (int)(Math.random() * 200);     // 300 – 500
+        this.failNormalHigh = 700 + (int)(Math.random() * 400);    // 700 – 1100
+        this.failConfusedLow = 900 + (int)(Math.random() * 500);   // 900 – 1400
+        this.failConfusedHigh = 1800 + (int)(Math.random() * 1200); // 1800 – 3000
+
+        // Fatigue waves — simulates energy cycles over a long session
+        this.fatigueCyclePeriod = 40.0 + Math.random() * 50.0;     // 40 – 90 min per cycle
+        this.fatigueWaveAmplitude = 0.10 + Math.random() * 0.15;   // 0.10 – 0.25
+        this.fatigueFloor = 0.15 + Math.random() * 0.15;           // 0.15 – 0.30
     }
 
     /**
@@ -57,8 +85,12 @@ public class HumanBehavior {
         double minutesRunning = (System.currentTimeMillis() - startTime) / 60000.0;
         double minutesSincePause = (System.currentTimeMillis() - lastPauseTime) / 60000.0;
 
-        // Fatigue increases over the whole session, slowly
-        fatigue = Math.min(0.85, minutesRunning * fatigueRate);
+        // Fatigue uses waves to simulate energy cycles over 24h sessions.
+        // Ramps up initially, then oscillates between tired and recovered periods.
+        double ramp = Math.min(1.0, minutesRunning * fatigueRate * 8.0); // ramps to 1.0 in ~1-2h
+        double wave = Math.sin(2.0 * Math.PI * minutesRunning / fatigueCyclePeriod);
+        double baseFatigue = fatigueFloor + ramp * (0.55 - fatigueFloor);
+        fatigue = clamp(baseFatigue + wave * fatigueWaveAmplitude, 0.0, 0.85);
 
         // Focus degrades with fatigue + time since last pause
         double baseFocus = 1.0 - fatigue * 0.6 - Math.min(minutesSincePause * 0.005, 0.15);
@@ -105,15 +137,18 @@ public class HumanBehavior {
      */
     public int failureDelay() {
         double roll = Math.random();
-        if (roll < 0.35) {
+        // Thresholds shift with fatigue — when tired, more confused delays
+        double frustratedThreshold = failFrustrationChance * (1.0 - fatigue * 0.3);
+        double normalThreshold = frustratedThreshold + 0.35;
+        if (roll < frustratedThreshold) {
             // Quick frustrated re-click
-            return Calculations.random(80, 350);
-        } else if (roll < 0.7) {
+            return Calculations.random(failFrustrationLow, failFrustrationHigh);
+        } else if (roll < normalThreshold) {
             // Normal retry
-            return Calculations.random(400, 900);
+            return Calculations.random(failNormalLow, failNormalHigh);
         } else {
             // Confused, takes a moment
-            return Calculations.random(1200, 2500);
+            return Calculations.random(failConfusedLow, failConfusedHigh);
         }
     }
 
